@@ -1,42 +1,38 @@
 #include <bits/stdc++.h>
 using namespace std;
-
-int dp[1005][1005];
+#define ll long long
 
 int main(){
 	int t; cin >> t;
-	while(t--){	
-		
+	while(t--){
 		string s; cin >> s;
-		s = " " + s;
 		int n = s.size();
-		for(int i = 1; i <= n; i++){
-			// TH len = 1
-			dp[i][i] = 1; // do len = 1 nên luôn đối xứng
-			// TH len = 2
-			if(i+1 < n){
-				if(s[i] == s[i+1]) dp[i][i+1] = 1;
-				else dp[i][i+1] = 0;
+		s = " " + s;
+		int F[n+1][n+1];
+		memset(F, 0, sizeof(F));
+		// bài toán cơ sở xâu con có 1 kí tự
+		for(int i = 1; i <= n; i++) F[i][i] = 1;
+		// bài toán cơ sở xâu con có 2 kí tự
+		for(int i = 1; i < n; i++){
+			if(s[i] == s[i+1]){
+				F[i][i+1] = 2;
 			}
 		}
-		//XÂY DỰNG TỪ NHỮNG XÂU CON NHỎ NHẤT, CHỈ LẤY NỬA TRÊN CỦA MA TRẬN ( DO LEN CỦA XÂU LÀ TỪ I ĐẾN J, I <= J)
-		for(int len = 3; len <= n; len++){
-			//duyệt các chỉ số bắt đầu của xâu có độ dài là len
-			for(int i = 1; i <= n-len+1 ; i++){
-				int j = i + len-1;
-				if(s[i] == s[j] && dp[i+1][j-1]){
-					dp[i][j] = 1;
+// *bản chất là tìm xâu con đối xứng dài nhất từ vị trí i đến vị trí j *
+		for(int i = n; i >= 1; i--){ // duyệt từ cuối về để sử dụng được bài toán cơ sở
+			for(int j = i+2; j <= n; j++){ 
+				if(s[i] == s[j] && F[i+1][j-1]){
+		// nếu ở 2 đầu của xâu con bằng nhau thì cập nhật độ dài cho nó
+					F[i][j] = F[i+1][j-1] + 2;
 				}
-				else dp[i][j] = 0;
 			}
 		}
-		int tmp = 0;
+		int res = 0;
 		for(int i = 1; i <= n; i++){
 			for(int j = i; j <= n; j++){
-				if(dp[i][j])
-				tmp = max(tmp, j - i + 1);
+				res = max(res, F[i][j]);
 			}
 		}
-		cout << tmp << endl;
+		cout <<res << endl;
 	}
 }
