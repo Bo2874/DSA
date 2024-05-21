@@ -20,6 +20,7 @@ int main(){
 			for(int j = 0; j < m; j++){
 				if(i == 0 || j == 0){
 					F[i][j] = a[i][j];
+					ans = max(F[i][j], ans);
 				}
 				else{
 					if(a[i][j])
