@@ -2,55 +2,50 @@
 using namespace std;
 #define pb push_back
 
-// PRIM
-int n, m, d = 0;
-vector <pair<int,int>> adj[10001];
-bool used[10001]; // true : i thuoc V(H), false : i thuoc V
-struct canh{
-	int x, y, w;
+// KRUSKAL
+struct edge{
+	int x, y, w;	
 };
-void nhap(){
-	cin >> n >> m;
-	d = 0;
-	for(int i = 0 ; i < 10001; i++) adj[i] = {};
-	memset(used, false, sizeof(used));
-	for(int i = 0; i < m; i++){
-		int x, y, w; cin >> x >> y >> w;
-		adj[x].pb({y,w});
-		adj[y].pb({x,w});
-	}
-	
+vector <edge> E;
+int parent[10001];
+int m, n;
+bool cmp(edge x, edge y){
+	return x.w < y.w;
 }
-void prim(int u){
-	vector <canh> T;
-	used[u] = true;
-	while(T.size() < n-1){
-//		e = (u, v);//Cạnh có độ dài nhỏ nhất với u thuoc V, v thuoc VH
-		int min_w = INT_MAX;
-		int X, Y; // lưu 2 đỉnh của cạnh e
-		for(int i = 1; i <= n; i++){
-		// nếu đỉnh i thuộc tập V(H)
-			if(used[i]){
-				for(pair<int, int> it : adj[i]){
-					int j = it.first, trongso = it.second;
-					if(!used[j] && trongso < min_w){
-						min_w = trongso; 
-						X = j, Y = i;;
-						// tìm trọng số nhỏ nhất giữa 2 tập đỉnh
-					} 
-				}
-			}
-		}
-		T.pb({X,Y,min_w});
-		d += min_w;
-		used[X] = true; // Loại đỉnh X khỏi V, thêm vào V(H)
+void nhap(){
+	E = {};
+	cin >> m >> n;
+	for(int i = 0; i < n; i++){
+		int x, y, w; cin >> x >> y >> w;
+		edge e{x,y,w};
+		E.pb(e);
+	} 
+	sort(E.begin(), E.end(), cmp); 
+}
+void init(){
+	for(int i = 1; i <= m; i++){
+		parent[i] = i;
 	}
+}
+int Find(int u){
+	if(u == parent[u]) return u;
+	return Find(parent[u]);
+}
+bool Union(int u, int v){
+	u = Find(u); v = Find(v);
+	if(u == v) return false;
+	parent[u] = v;
+	return true;
 }
 int main(){
 	int t; cin >> t;
 	while(t--){
 		nhap();
-		prim(1);
-		cout << d << endl;
+		init();
+		int sum_min = 0;
+		for(edge k : E){
+			if(Union(k.x, k.y)) sum_min += k.w;
+		}
+		cout << sum_min << endl;
 	}
 }
